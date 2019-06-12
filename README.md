@@ -9,3 +9,7 @@ golang多款短视频无水印视频解析接口
 调用方法为：http://127.0.0.1:6969/?url=视频链接
 
 返回json
+
+github.com/astaxie/beego
+
+github.com/tidwall/gjson

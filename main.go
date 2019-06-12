@@ -12,12 +12,6 @@ import (
 	"strings"
 )
 
-/**
- * Author: Filmy
- * Group: Mlooc
- * Date: 2019/5/28
- * Time: 8:58
- */
 
 type analysisController struct {
 	beego.Controller

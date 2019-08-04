@@ -239,15 +239,17 @@ func huoShan(url string) map[string]interface{} {
 // 快手
 func kuaiShou(url string) map[string]interface{} {
 	resp := HttpGet(url, pc_ua)
-	photoId := regexp.MustCompile(`"photoId":"(.*?)",`).FindAllStringSubmatch(resp, -1)
+	photoId := regexp.MustCompile(`href="/u/.*?/(.*?)"`).FindAllStringSubmatch(resp, -1)
 	if len(photoId) < 1 || len(photoId[0]) < 2 {
 		return Echo(400, "参数错误", nil)
 	}
-	resp = HttpGet("https://api.kmovie.gifshow.com/rest/n/kmovie/app/photo/getPhotoById?WS&jjh_yqc&ws&photoId="+photoId[0][1], pc_ua)
+	param := `client_key=56c3713c&photoIds=` + photoId[0][1]
+	sig := md5M(strings.ReplaceAll(param, "&", "") + string([]byte{50, 51, 99, 97, 97, 98, 48, 48, 51, 53, 54, 99}))
+	resp = HttpPost("http://api.gifshow.com/rest/n/photo/info", param+`&sig=`+sig, "application/x-www-form-urlencoded", "kwai-android")
 	respJson := gjson.Parse(resp)
-	text := respJson.Get("photo.caption").Str
-	cover := respJson.Get("photo.coverUrl").Str
-	playAddr := respJson.Get("photo.mainUrl").Str
+	text := respJson.Get("photos.0.caption").Str
+	cover := respJson.Get("photos.0.thumbnail_url").Str
+	playAddr := respJson.Get("photos.0.main_mv_url").Str
 	if playAddr == "" {
 		return Echo(400, "解析错误", nil)
 	}
